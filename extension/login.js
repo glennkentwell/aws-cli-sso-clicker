@@ -25,7 +25,3 @@ function tryClick(ms = undefined) {
 
 tryClick();
 
-/**
- * i am going to write some nice docs here
- *
-*/
