@@ -1,23 +1,31 @@
-window.ivl = setInterval(() => {
-	try {
-		Object.values(document.getElementsByTagName('button'))
-			.filter((btn) => btn && (console.log('button', btn) || btn.innerText.match(/Allow/) || !!btn.id?.match(/login|cli_verification_btn/)) )
-			.map(b => {
-				if (b) {
-					b.innerText = b.id;
-					// b.style = 'border: solid 5px #ff0; width: 400px; height: 200px;';
-					setTimeout(() => { b.click() }, 500);
-				}
-			});
-	} catch {
-		console.log('err')
-	}
-}, 300);
-setTimeout(() => { console.log('ivl', ivl); clearInterval(ivl); }, 5000);
 
-// <button data-testid="allow-access-button" 
-// 	data-analytics="consent-allow-access" 
-// 	data-analytics-type="eventDetail" 
-// 	class="awsui_button_vjswe_2od9j_107 awsui_variant-primary_vjswe_2od9j_251" 
-// 	data-analytics-funnel-value="button5-1714091094027-9194" 
-// 	type="submit"><span class="awsui_content_vjswe_2od9j_103">Allow</span></button>
+const DEBUG = true;
+const DELAY = 750;
+
+const LAST_PAGE_TEXT = new RegExp(/you can close this window/i);
+const BTN_ALLOW = new RegExp(/Allow/);
+const BTN_LOGIN_ETC = new RegExp(/login|cli_verification_btn/);
+const print = (o) => (DEBUG && console.log(o?.innerHTML ?? o, window.location.href)) && o || o;
+const thereYet = () => document.body.innerText.match(LAST_PAGE_TEXT);
+
+function tryClick(ms = undefined) {
+  if (ms) {
+    print('trying');
+    for (const btn of document.getElementsByTagName('button')) {
+      if (btn && (btn.innerText.match(BTN_ALLOW) || !!btn.id?.match(BTN_LOGIN_ETC))) {
+        print({ btn, form: btn.form });
+        btn.click();
+      }
+    }
+    print('tried');
+  }
+
+  setTimeout(() => thereYet() || tryClick(DELAY), ms);
+}
+
+tryClick();
+
+/**
+ * i am going to write some nice docs here
+ *
+*/
